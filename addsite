@@ -4,6 +4,7 @@
 # Works with Ubuntu file paths
 # Places web root in /home/$USER/public_html
 # Accepts "cake" and "zend" as arguments for CakePHP and Zend Framework projects
+# Ensure Apache is set to listen on 127.0.0.1 instead of *
 #
 
 # Function YesNo
