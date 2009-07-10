@@ -1,0 +1,109 @@
+#!/bin/sh
+#
+# Adds a new website to the hosts file and adds a virtual host block to the apache configuration
+# Works with Ubuntu file paths
+# Places web root in /home/$USER/public_html
+# Accepts "cake" and "zend" as arguments for CakePHP and Zend Framework projects
+#
+
+# Function YesNo
+# Optional first parameter sets the default option, either yes or no
+YesNo() 
+{
+	while true
+	do
+	  read CONFIRM
+	  case $CONFIRM in
+		y|Y|YES|yes|Yes)
+			return 0
+			break
+			;;
+		n|N|no|NO|No)
+			return 1
+		  	break
+		  	;;
+		"")	if [ $# = 1 ] && [ $1 = "no" ]
+			then
+			return 1
+			fi
+			if [ $# = 1 ] && [ $1 = "yes" ]
+			then
+			return 0
+			fi
+			echo Please enter only y or n
+			;;
+		*) echo Please enter only y or n
+	  esac
+	done
+}
+
+tflag=
+
+while getopts 't:' OPTION
+do
+	case $OPTION in
+	t)	tflag=1
+		tval="$OPTARG"
+		;;
+	?) 	exit 2
+		;;
+	esac
+done
+shift $(($OPTIND - 1))
+
+if [ $# -ne 1 ]
+then
+	echo "Adds a new website to the hosts file and adds a virtual host block to the apache configuration."
+	echo "Usage: addsite [-t cake|zend] <website name>" >&2
+	exit 1
+fi
+
+echo Creating site directory...
+
+if [ "$tflag" ] && [ "$tflag" = "zend" ]
+then
+	mkdir /home/$USER/public_html/$1/public
+else
+	mkdir /home/$USER/public_html/$1
+fi
+
+sudo chown $USER:www-data -R /home/$USER/public_html/$1
+
+echo Adding site $1 to hosts file...
+if grep $1 /etc/hosts
+then
+	echo -n "Site appears to be in host file already. Add anyway? [y/N]: "
+	if YesNo no
+	then
+		echo "Adding to hosts file anyway..."
+		echo "127.0.0.1       $1.localhost" | sudo tee -a  /etc/hosts
+	fi
+else
+	echo "127.0.0.1       $1.localhost" | sudo tee -a  /etc/hosts
+fi
+
+echo "Creating virtual host for site $1"
+
+# Will overwrite any pre-existing files
+if [ "$tflag" ]
+then
+	if [ "$tval" = "zend" ]
+	then
+		printf "<VirtualHost 127.0.0.1:80>\n\tServerName %s.localhost\n\tDocumentRoot /home/%s/public_html/%s/public\n\t<Directory /home/lee/public_html/%s/public>\n\t\tAllowOverride All\n\t\tOptions Indexes FollowSymLinks MultiViews\n\t</Directory>\n</VirtualHost>\n" $1 $USER $1 $1 | sudo tee /etc/apache2/sites-available/$1
+	fi
+	if [ "$tval" = "cake" ]
+	then
+		printf "<VirtualHost 127.0.0.1:80>\n\tServerName %s.localhost\n\tDocumentRoot /home/%s/public_html/%s/app/webroot\n\t<Directory /home/lee/public_html/%s/app/webroot>\n\t\tAllowOverride All\n\t\tOptions Indexes FollowSymLinks MultiViews\n\t</Directory>\n</VirtualHost>\n" $1 $USER $1 $1 | sudo tee /etc/apache2/sites-available/$1
+	fi
+else
+	printf "<VirtualHost 127.0.0.1:80>\n\tServerName %s.localhost\n\tDocumentRoot /home/%s/public_html/%s/\n\t<Directory /home/lee/public_html/%s/>\n\t\tAllowOverride All\n\t\tOptions Indexes FollowSymLinks MultiViews\n\t</Directory>\n</VirtualHost>\n" $1 $USER $1 $1 | sudo tee /etc/apache2/sites-available/$1
+fi
+
+echo Enabling virtual host...
+sudo a2ensite $1
+
+echo Reloading apache...
+sudo /etc/init.d/apache2 force-reload
+
+echo "Finished! Please visit http://$1.localhost"
+exit 1
