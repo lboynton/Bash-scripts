@@ -1,0 +1,2 @@
+# adds everything that is not in version control to version control. Be sure to do a svn status before so you know what will be added.
+svn status | grep '\?' | awk '{print $2;}' | xargs svn add 
