@@ -61,9 +61,9 @@ fi
 
 echo Creating site directory...
 
-if [ "$tflag" ] && [ "$tflag" = "zend" ]
+if [ "$tflag" ] && [ "$tval" = "zend" ]
 then
-	mkdir /home/$USER/public_html/$1/public
+	mkdir -p /home/$USER/public_html/$1/public
 else
 	mkdir /home/$USER/public_html/$1
 fi
