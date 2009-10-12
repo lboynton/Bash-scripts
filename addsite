@@ -65,7 +65,7 @@ if [ "$tflag" ] && [ "$tval" = "zend" ]
 then
 	mkdir -p /home/$USER/public_html/$1/public
 else
-	mkdir /home/$USER/public_html/$1
+	mkdir -p /home/$USER/public_html/$1
 fi
 
 sudo chown $USER:www-data -R /home/$USER/public_html/$1
