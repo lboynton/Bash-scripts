@@ -90,14 +90,14 @@ if [ "$tflag" ]
 then
 	if [ "$tval" = "zend" ]
 	then
-		printf "<VirtualHost 127.0.0.1:80>\n\tServerName %s.localhost\n\tSetEnv APPLICATION_ENV development\n\tDocumentRoot /home/%s/public_html/%s/public\n\t<Directory /home/%s/public_html/%s/public>\n\t\tAllowOverride All\n\t\tOptions Indexes FollowSymLinks MultiViews\n\t</Directory>\n</VirtualHost>\n" $1 $USER $1 $USER $1 | sudo tee /etc/apache2/sites-available/$1
+		printf "<VirtualHost 127.0.0.1:80>\n\tServerName %s.localhost\n\tSetEnv APPLICATION_ENV development\n\tDocumentRoot /home/%s/public_html/%s/public\n\t<Directory /home/%s/public_html/%s/public>\n\t\tAllowOverride All\n\t\tOptions Indexes FollowSymLinks MultiViews\n\t</Directory>\n</VirtualHost>\n" $1 $USER $1 $USER $1 | sudo tee /etc/apache2/sites-available/$1.conf
 	fi
 	if [ "$tval" = "cake" ]
 	then
-		printf "<VirtualHost 127.0.0.1:80>\n\tServerName %s.localhost\n\tDocumentRoot /home/%s/public_html/%s/app/webroot\n\t<Directory /home/%s/public_html/%s/app/webroot>\n\t\tAllowOverride All\n\t\tOptions Indexes FollowSymLinks MultiViews\n\t</Directory>\n</VirtualHost>\n" $1 $USER $1 $USER $1 | sudo tee /etc/apache2/sites-available/$1
+		printf "<VirtualHost 127.0.0.1:80>\n\tServerName %s.localhost\n\tDocumentRoot /home/%s/public_html/%s/app/webroot\n\t<Directory /home/%s/public_html/%s/app/webroot>\n\t\tAllowOverride All\n\t\tOptions Indexes FollowSymLinks MultiViews\n\t</Directory>\n</VirtualHost>\n" $1 $USER $1 $USER $1 | sudo tee /etc/apache2/sites-available/$1.conf
 	fi
 else
-	printf "<VirtualHost 127.0.0.1:80>\n\tServerName %s.localhost\n\tDocumentRoot /home/%s/public_html/%s/\n\t<Directory /home/%s/public_html/%s/>\n\t\tAllowOverride All\n\t\tOptions Indexes FollowSymLinks MultiViews\n\t</Directory>\n</VirtualHost>\n" $1 $USER $1 $USER $1 | sudo tee /etc/apache2/sites-available/$1
+	printf "<VirtualHost 127.0.0.1:80>\n\tServerName %s.localhost\n\tDocumentRoot /home/%s/public_html/%s/\n\t<Directory /home/%s/public_html/%s/>\n\t\tAllowOverride All\n\t\tOptions Indexes FollowSymLinks MultiViews\n\t</Directory>\n</VirtualHost>\n" $1 $USER $1 $USER $1 | sudo tee /etc/apache2/sites-available/$1.conf
 fi
 
 echo Enabling virtual host...
